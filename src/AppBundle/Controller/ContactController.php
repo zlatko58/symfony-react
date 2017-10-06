@@ -33,10 +33,17 @@ class ContactController extends Controller
             $emailConstraint
         );
 
-        if (is_null($email) || is_null($message) || count(trim($email)) == 0 || count(trim($message)) == 0) {
+        if (is_null($email) || is_null($message) || strlen(trim($email)) == 0 || strlen(trim($message)) == 0) {
             return new JsonResponse([
                 'text' => 'Empty inputs',
                 'error' => 'Empty inputs',
+            ]);
+        }
+
+        if (strlen($email) > 100 || strlen($message) > 1000) {
+            return new JsonResponse([
+                'text' => 'Too long inputs',
+                'error' => 'Too long inputs',
             ]);
         }
 
