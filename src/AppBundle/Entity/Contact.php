@@ -24,10 +24,8 @@ class Contact
 
     /**
      * @Assert\Length(
-     *      min = 2,
-     *      max = 5,
-     *      minMessage = "Your first name must be at least {{ limit }} characters long",
-     *      maxMessage = "Your first name cannot be longer than {{ limit }} characters"
+     *      max = 100,
+     *      maxMessage = "Your name cannot be longer than {{ limit }} characters"
      * )
      * 
      * @var string
@@ -37,6 +35,13 @@ class Contact
     private $name;
 
     /**
+     = @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email.",
+     *     checkMX = true
+     * )
+     *
+     * @Assert\NotBlank()
+     * 
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)
@@ -44,6 +49,13 @@ class Contact
     private $email;
 
     /**
+     * @Assert\Length(
+     *      max = 1000,
+     *      maxMessage = "Your message is too long. Cannot be longer than {{ limit }} characters"
+     * )
+     *
+     * @Assert\NotBlank()
+     * 
      * @var string
      *
      * @ORM\Column(name="message", type="string", length=1000)

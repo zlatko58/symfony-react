@@ -2,13 +2,11 @@
 
 namespace AppBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\Contact;
-use Symfony\Component\Validator\Constraints\Email as EmailConstraint;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use AppBundle\Form\ContactType;
 
 
 class ContactController extends Controller
@@ -18,51 +16,34 @@ class ContactController extends Controller
      */
     public function addContactAction(Request $request)
     {
-        $emailConstraint = new EmailConstraint();
-        $emailConstraint->message = 'Invalid email!';
-
-        $data = $request->getContent();
-        $params = json_decode($data, true);
-
-        $name = $params['name'];
-        $email = $params['email'];
-        $message = $params['message'];
-
-        $errors = $this->get('validator')->validate(
-            $email,
-            $emailConstraint
-        );
-
-        if (is_null($email) || is_null($message) || strlen(trim($email)) == 0 || strlen(trim($message)) == 0) {
-            return new JsonResponse([
-                'text' => 'Empty inputs',
-                'error' => 'Empty inputs',
-            ]);
-        }
-
-        if (strlen($email) > 100 || strlen($message) > 1000) {
-            return new JsonResponse([
-                'text' => 'Too long inputs',
-                'error' => 'Too long inputs',
-            ]);
-        }
-
-        if (count($errors)) {
-            return new JsonResponse([
-                'text' => $emailConstraint->message,
-                'error' => $errors,
-            ]);
-        }
-
-        $em = $this->getDoctrine()->getManager();
-
+        $data = json_decode($request->getContent(), true);
         $contact = new Contact();
-        $contact->setName($name);
-        $contact->setEmail($email);
-        $contact->setMessage($message);
-        $em->persist($contact);
-        $em->flush();
+        
+        $form = $this->createForm(ContactType::class, $contact);
+        $form->submit($data);
 
-        return new JsonResponse(true);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($contact);
+            $em->flush();
+            return new JsonResponse(true);
+        }
+
+        return new JsonResponse(false);
+    }
+
+    /**
+     * @Route("/contact/getAll")
+     */
+    public function getContactAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery(
+            'SELECT c
+            FROM AppBundle:Contact c'
+        );
+        $contacts = $query->getArrayResult();
+
+        return new JsonResponse($contacts);
     }
 }

@@ -1,16 +1,12 @@
 import * as types from '../constants/actionTypes';
 
-import {getFormattedDateTime} from '../utils/dateHelper';
-
-// example of a thunk using the redux-thunk middleware
-export function saveContacts(contact) {
-  console.log('set');
-  console.log(contact);
+export function saveContact(contact) {
   return function (dispatch) {
-    fetch('http://localhost:8001/contact/add', {
+    fetch('http://localhost:8000/contact/add', {
       method: 'POST',
       headers: {
-        'Accept': 'application/json'
+       'Accept': 'application/json',
+       'Access-Control-Allow-Origin': '*'
       },
       body: JSON.stringify({
         name: contact.name,
@@ -19,12 +15,30 @@ export function saveContacts(contact) {
       })
     })
     .then(
-        response => response.json(),
-        error => console.log('An error occured.', error),
-    );
+        (json) => {
+
+          console.log('parsed json');
+          console.log('parsed json', json)
+        });
     return dispatch({
-      type: types.SAVE_CONTACTS,
-      dateModified: getFormattedDateTime(),
+      type: types.SAVE_CONTACT,
+      contact
+    });
+  };
+}
+
+export function loadContacts(contact) {
+  console.log(contact);
+  return function (dispatch) {
+    fetch('http://localhost:8000/contact/getAll')
+    .then(
+        (json) => {
+
+          console.log('parsed json');
+          console.log('parsed json', json)
+    });
+    return dispatch({
+      type: types.LOAD_CONTACTS,
       contact
     });
   };

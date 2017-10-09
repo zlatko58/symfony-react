@@ -1,1 +1,2 @@
-export const SAVE_CONTACTS = 'SAVE_CONTACTS';
+export const SAVE_CONTACT = 'SAVE_CONTACT';
+export const LOAD_CONTACTS = 'LOAD_CONTACTS';

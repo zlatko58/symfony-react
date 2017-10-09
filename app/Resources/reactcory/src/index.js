@@ -5,9 +5,12 @@ import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import configureStore, { history } from './store/configureStore';
 import Root from './components/Root';
-import './styles/styles.scss';
-require('./favicon.ico');
+import { loadContacts } from './actions/contactsActions';
+
+require('./favicon.ico'); // Tell webpack to load favicon.ico
 const store = configureStore();
+
+store.dispatch(loadContacts());
 
 render(
   <AppContainer>
